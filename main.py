@@ -5,6 +5,7 @@ import random
 import random_agent
 import player_agent
 import minimax_agent
+import pandas as pd
 print('a')
 import matplotlib.pyplot as plt
 print('b')
@@ -22,7 +23,7 @@ pygame.init()
 def to_play(board):
     return board.fen().split(' ')[1]
 
-def play_game(agent_w, agent_b, pov, show=True):
+def play_game(agent_w, agent_b, pov, show=True, print_moves=True):
     board = chess.Board()
     if show:
         screen = pygame.display.set_mode((display.BOARD_LENGTH + 2 * display.BORDER,
@@ -54,7 +55,9 @@ def play_game(agent_w, agent_b, pov, show=True):
                 black_move_arr.append(str(move))
                 san_arr.append(temp_board.variation_san([chess.Move.from_uci(m) for m in [white_move_arr[-1],
                                                                                       black_move_arr[-1]]]))
-                #print(san_arr[-1])
+
+                if print_moves:
+                    print(san_arr[-1])
 
                 #print('black time: ', black_time_arr[-1])
             board.push_uci(move)
@@ -83,31 +86,29 @@ def play_game(agent_w, agent_b, pov, show=True):
 
     return board.result(), white_time_arr, black_time_arr, san_arr
 
-#result = play_game(screen, player_agent.PlayerAgent(), random_agent.RandomAgent(), pov='w')
+#result = play_game(player_agent.PlayerAgent(), minimax_agent.MinimaxAgent(2), pov='w')
 
-games = 1
+games = 10
 white_arr = - np.ones((games, 300))
 black_arr = - np.ones((games, 300))
 
 for i in range(games):
-    result, white_times, black_times, san_arr = play_game(minimax_agent.MinimaxAgentIter(1),
-                                                  minimax_agent.MinimaxAgentRecur(0), pov='w', show=False)
+    result, white_times, black_times, san_arr = play_game(random_agent.RandomAgent(),
+                                                  random_agent.RandomAgent(), pov='w', show=False, print_moves=False)
+    white_times = white_times[:300]
+    black_times = black_times[:300]
     white_arr[i][:len(white_times)] = white_times
     black_arr[i][:len(black_times)] = black_times
 
-print(white_arr)
 white_arr = np.array(white_arr)
 black_arr = np.array(black_arr)
 
-to_plot_white = np.zeros(100)
-to_plot_black = np.zeros(100)
-for i in range(100):
-    to_plot_white[i] = np.mean(white_arr[:, i][white_arr[:,i] != -1])
-    to_plot_black[i] = np.mean(black_arr[:, i][black_arr[:, i] != -1])
+white_arr[white_arr == -1] = np.nan
+black_arr[black_arr == -1] = np.nan
 
+white_df = pd.DataFrame(white_arr)
+black_df = pd.DataFrame(black_arr)
 
-#print(result)
-plt.plot(to_plot_white, label='white')
-plt.plot(to_plot_black, label='black')
-plt.legend()
-plt.show()
+white_df.to_csv('move_time_data/white_test.csv')
+
+print(white_df)
