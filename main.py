@@ -86,29 +86,36 @@ def play_game(agent_w, agent_b, pov, show=True, print_moves=True):
 
     return board.result(), white_time_arr, black_time_arr, san_arr
 
-#result = play_game(player_agent.PlayerAgent(), minimax_agent.MinimaxAgent(2), pov='w')
+#result = play_game(minimax_agent.MinimaxAgent(2, square_weighting=True), minimax_agent.MinimaxAgent(2), pov='w', show=True)
 
-games = 10
-white_arr = - np.ones((games, 300))
-black_arr = - np.ones((games, 300))
 
-for i in range(games):
-    result, white_times, black_times, san_arr = play_game(random_agent.RandomAgent(),
-                                                  random_agent.RandomAgent(), pov='w', show=False, print_moves=False)
-    white_times = white_times[:300]
-    black_times = black_times[:300]
-    white_arr[i][:len(white_times)] = white_times
-    black_arr[i][:len(black_times)] = black_times
+weight_agent = minimax_agent.MinimaxAgent(1, square_weighting=False, ratio=True)
+no_weight_agent = minimax_agent.MinimaxAgent(1, square_weighting=False)
 
-white_arr = np.array(white_arr)
-black_arr = np.array(black_arr)
 
-white_arr[white_arr == -1] = np.nan
-black_arr[black_arr == -1] = np.nan
+game_count = 100
 
-white_df = pd.DataFrame(white_arr)
-black_df = pd.DataFrame(black_arr)
+weight_wins = 0
+no_weight_wins = 0
+for i in range(game_count):
+    if i % 2 == 0:
+        result = play_game(weight_agent, no_weight_agent, pov='w',
+                       show=False, print_moves=False)
+    else:
+        result = play_game(no_weight_agent, weight_agent, pov='w', show=False, print_moves=False)
+    print('result', result[0])
 
-white_df.to_csv('move_time_data/white_test.csv')
+    if result[0] == '1-0':
+        if i % 2 == 0:
+            weight_wins += 1
+        elif i % 2 == 1:
+            no_weight_wins += 1
+    elif result[0] == '0-1':
+        if i % 2 == 0:
+            no_weight_wins += 1
+        else:
+            weight_wins += 1
+    print(weight_wins, '-', no_weight_wins)
 
-print(white_df)
+
+

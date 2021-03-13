@@ -3,6 +3,8 @@ import copy
 import random
 import evaluation
 
+
+
 class MinimaxAgent:
     def __init__(self, depth, is_alpha_beta=True, square_weighting=False, ratio=False):
         self.depth = depth

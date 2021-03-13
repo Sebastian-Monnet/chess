@@ -7,6 +7,7 @@ SQUARE_LENGTH = BOARD_LENGTH // 8
 
 DARK_SQUARE = (50, 50, 100)
 LIGHT_SQUARE = (50, 50, 200)
+HIGHLIGHT = (255, 255, 200)
 
 LETTER_TO_NUM = {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6, 'g': 7, 'h': 8}
 NUM_TO_LETTER = {1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e', 6: 'f', 7: 'g', 8: 'h'}
@@ -19,11 +20,22 @@ def notation_to_coord(notation, pov='w'):
         y = 8 - int(b)
     else:
         y = int(b) - 1
+        x = 7 - x
 
     return x, y
 
+def highlight_square(screen, pos, pov):
+    i, j = notation_to_coord(pos, pov)
+    pygame.draw.rect(screen, HIGHLIGHT, (BORDER + i * SQUARE_LENGTH, BORDER + j * SQUARE_LENGTH, SQUARE_LENGTH,
+                                         SQUARE_LENGTH))
+
 
 def draw_board(screen):
+    '''
+    :param screen: pygame screen.
+    :param highlight: chess notation for coordinate to highlight.
+    :return:
+    '''
     for i in range(8):
         for j in range(8):
             if (i + j) % 2 == 1:
@@ -33,6 +45,9 @@ def draw_board(screen):
 
             pygame.draw.rect(screen, colour,
                              (BORDER + i * SQUARE_LENGTH, BORDER + j * SQUARE_LENGTH, SQUARE_LENGTH, SQUARE_LENGTH))
+
+
+
 
 
 def get_piece_img(piece_name):
@@ -101,8 +116,9 @@ def main():
     draw_board(screen)
 
     board = chess.Board()
+    highlight_square(screen, 'c7', 'b')
 
-    draw_all_pieces(board.fen(), screen, 'w')
+    draw_all_pieces(board.fen(), screen, 'b')
 
 
 
@@ -113,5 +129,6 @@ def main():
                 pygame.quit()
                 sys.exit()
         pygame.display.update()
+
 
 
