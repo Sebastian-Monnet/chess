@@ -1,7 +1,7 @@
 import chess
 import copy
 import random
-import evaluation
+import evaluation_2
 
 
 
@@ -12,7 +12,8 @@ class MinimaxAgent:
         self.square_weighting = square_weighting
         self.ratio = ratio
 
-    def get_move(self, board, turn):
+    def get_move(self, board):
+        turn = board.fen().split(' ')[1]
         move_arr = MinimaxAgent.get_legal_moves(board)
         random.shuffle(move_arr)
         best_val = -10000
@@ -38,7 +39,7 @@ class MinimaxAgent:
 
     def alpha_beta(self, board, true_player, depth, alpha, beta):
         if depth == 0 or board.is_game_over():
-            return evaluation.evaluate(board, true_player, self.square_weighting, self.ratio)
+            return evaluation_2.evaluate(board, true_player, self.square_weighting, self.ratio)
 
         to_play = board.fen().split(' ')[1]
         if to_play == true_player:

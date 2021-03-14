@@ -1,8 +1,9 @@
 import chess
 
 PIECE_VALUES = {'P' : 1, 'R' : 5, 'N' : 3.2, 'B' : 3.3, 'Q' : 9, 'K' : 900}
+SQUARE_VALUE_WEIGHTING = 1
 
-def get_square_weighting(i, j):
+def get_square_value(i, j):
     UPPER_BOUND = 100
     return (UPPER_BOUND - max(abs(i - 3.5), abs(j - 3.5))) / (UPPER_BOUND - 0.5)
 
@@ -34,7 +35,7 @@ def evaluate(board, true_player, square_weighting=False, ratio=False):
                 continue
             abs_val = PIECE_VALUES[char.upper()]
             if square_weighting and char.upper() != 'K':
-                abs_val *= get_square_weighting(i, j)
+                abs_val += get_square_value(i, j)
             if char.isupper():
                 w_pts += abs_val
             else:

@@ -4,13 +4,25 @@ import random
 import evaluation
 
 class MinimaxAgent:
-    def __init__(self, depth, is_alpha_beta=True, square_weighting=False, ratio=False):
+    def __init__(self, depth, square_weighting=False, ratio=False):
+        '''
+        :param depth: int. search depth for minimax. Technically the search depth is one more than the depth parameter,
+        because we use minimax to evaluate each child of the current state.
+        :param square_weighting: bool. tells us whether to consider the location of the pieces in the evaluation function
+        (i.e. we like the centre and dislike the edges).
+        :param ratio: Tells us whether to consider the difference between material point scores or the ratio. (i.e.
+        if True then we are encouraged to trade when ahead.
+        '''
         self.depth = depth
-        self.is_alpha_beta = is_alpha_beta
         self.square_weighting = square_weighting
         self.ratio = ratio
 
-    def get_move(self, board, turn):
+    def get_move(self, board):
+        '''
+        :param board: chess.Board object
+        :return:
+        '''
+        turn = board.fen().split(' ')[1]
         move_arr = MinimaxAgent.get_legal_moves(board)
         random.shuffle(move_arr)
         best_val = -10000
@@ -18,10 +30,7 @@ class MinimaxAgent:
         for i in range(len(move_arr)):
             new_board = copy.deepcopy(board)
             new_board.push(move_arr[i])
-            if self.is_alpha_beta:
-                new_val = self.alpha_beta(new_board, turn, self.depth, -10000, 10000)
-            else:
-                new_val = self.minimax(new_board, turn, self.depth)
+            new_val = self.alpha_beta(new_board, turn, self.depth, -10000, 10000)
             if new_val > best_val:
                 best_val = new_val
                 best_ind = i

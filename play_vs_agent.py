@@ -9,7 +9,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import datetime
 import time
+import minimax_agent_2
 import numpy as np
+import evaluation_2
 from pygame.locals import *
 
 def selected_square(x, y, pov):
@@ -84,13 +86,23 @@ def play_game(agent, player_colour):
     screen = pygame.display.set_mode((display.BOARD_LENGTH + 2 * display.BORDER,
                                           display.BOARD_LENGTH + 2 * display.BORDER), 0, 32)
 
+    san_arr = []
+
     while not board.is_game_over():
         turn = board.fen().split(' ')[1]
         if turn == player_colour:
             move = get_player_move(screen, board, player_colour)
         else:
-            move = agent.get_move(board, turn)
+            move = agent.get_move(board)
+        if turn == 'w':
+            temp_board = copy.deepcopy(board)
+            white_move = move
+        else:
+            black_move = move
+            san_arr.append(temp_board.variation_san([chess.Move.from_uci(m) for m in [white_move, black_move]]))
+            print(san_arr[-1])
         board.push_uci(move)
+
 
         display.draw_board(screen)
         display.draw_all_pieces(board.fen(), screen, player_colour)
@@ -111,8 +123,8 @@ def play_game(agent, player_colour):
 
 
 
-#agent = minimax_agent.MinimaxAgent(2, square_weighting=True)
+agent = minimax_agent_2.MinimaxAgent(2)
 
-agent = random_agent.RandomAgent()
+#agent = random_agent.RandomAgent()
 
 play_game(agent, 'w')

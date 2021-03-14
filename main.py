@@ -8,6 +8,7 @@ import minimax_agent
 import pandas as pd
 print('a')
 import matplotlib.pyplot as plt
+import minimax_agent_2
 print('b')
 import datetime
 import time
@@ -43,13 +44,13 @@ def play_game(agent_w, agent_b, pov, show=True, print_moves=True):
 
             if turn=='w':
                 temp_board = copy.deepcopy(board)
-                move = agent_w.get_move(board, turn)
+                move = agent_w.get_move(board)
                 white_move_arr.append(str(move))
                 old_time, new_time = new_time, datetime.datetime.now()
                 white_time_arr.append((new_time - old_time).total_seconds())
                 #print('white time: ', white_time_arr[-1])
             else:
-                move = agent_b.get_move(board, turn)
+                move = agent_b.get_move(board)
                 old_time, new_time = new_time, datetime.datetime.now()
                 black_time_arr.append((new_time - old_time).total_seconds())
                 black_move_arr.append(str(move))
@@ -89,8 +90,8 @@ def play_game(agent_w, agent_b, pov, show=True, print_moves=True):
 #result = play_game(minimax_agent.MinimaxAgent(2, square_weighting=True), minimax_agent.MinimaxAgent(2), pov='w', show=True)
 
 
-weight_agent = minimax_agent.MinimaxAgent(1, square_weighting=False, ratio=True)
-no_weight_agent = minimax_agent.MinimaxAgent(1, square_weighting=False)
+weight_agent = minimax_agent_2.MinimaxAgent(1)
+no_weight_agent = minimax_agent.MinimaxAgent(1, ratio=True, square_weighting=True)
 
 
 game_count = 100
