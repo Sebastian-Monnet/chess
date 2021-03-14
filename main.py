@@ -12,6 +12,7 @@ import minimax_agent_2
 print('b')
 import datetime
 import time
+import minimax_agent_3
 import numpy as np
 from pygame.locals import *
 
@@ -48,12 +49,14 @@ def play_game(agent_w, agent_b, pov, show=True, print_moves=True):
                 white_move_arr.append(str(move))
                 old_time, new_time = new_time, datetime.datetime.now()
                 white_time_arr.append((new_time - old_time).total_seconds())
-                #print('white time: ', white_time_arr[-1])
+
+                print('white time:', white_time_arr[-1])
             else:
                 move = agent_b.get_move(board)
                 old_time, new_time = new_time, datetime.datetime.now()
                 black_time_arr.append((new_time - old_time).total_seconds())
                 black_move_arr.append(str(move))
+                print('black time:', black_time_arr[-1])
                 san_arr.append(temp_board.variation_san([chess.Move.from_uci(m) for m in [white_move_arr[-1],
                                                                                       black_move_arr[-1]]]))
 
@@ -90,8 +93,10 @@ def play_game(agent_w, agent_b, pov, show=True, print_moves=True):
 #result = play_game(minimax_agent.MinimaxAgent(2, square_weighting=True), minimax_agent.MinimaxAgent(2), pov='w', show=True)
 
 
-weight_agent = minimax_agent_2.MinimaxAgent(1)
-no_weight_agent = minimax_agent.MinimaxAgent(1, ratio=True, square_weighting=True)
+weight_agent = minimax_agent_3.MinimaxAgent(2)
+no_weight_agent = minimax_agent_3.MinimaxAgent(2)
+
+res, white_times, black_times, san_arr = play_game(weight_agent, no_weight_agent, pov='w', show=True)
 
 
 game_count = 100

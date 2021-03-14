@@ -7,7 +7,7 @@ def get_square_value(i, j):
     UPPER_BOUND = 100
     return (UPPER_BOUND - max(abs(i - 3.5), abs(j - 3.5))) / (UPPER_BOUND - 0.5)
 
-def evaluate(board, true_player, square_weighting=False, ratio=False):
+def evaluate(board, true_player, square_weighting=False, ratio=False, print_scores=False):
     if board.is_game_over():
         result = board.result()
         if result == '1/2-1/2':
@@ -44,6 +44,8 @@ def evaluate(board, true_player, square_weighting=False, ratio=False):
     if ratio:
         val = w_pts / b_pts
 
+    if print_scores:
+        print('old_val:', w_pts, b_pts)
     if true_player == 'w' and ratio:
         return w_pts / b_pts
     elif true_player == 'w':

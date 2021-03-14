@@ -12,6 +12,7 @@ import time
 import minimax_agent_2
 import numpy as np
 import evaluation_2
+import evaluation
 from pygame.locals import *
 
 def selected_square(x, y, pov):
@@ -102,6 +103,8 @@ def play_game(agent, player_colour):
             san_arr.append(temp_board.variation_san([chess.Move.from_uci(m) for m in [white_move, black_move]]))
             print(san_arr[-1])
         board.push_uci(move)
+        evaluation_2.evaluate(board, 'b')
+        evaluation.evaluate(board, 'b', square_weighting=True, ratio=True)
 
 
         display.draw_board(screen)
@@ -123,7 +126,7 @@ def play_game(agent, player_colour):
 
 
 
-agent = minimax_agent_2.MinimaxAgent(2)
+agent = minimax_agent_2.MinimaxAgent(2,3)
 
 #agent = random_agent.RandomAgent()
 

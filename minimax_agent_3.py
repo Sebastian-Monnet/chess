@@ -6,7 +6,7 @@ import priorities
 
 
 class MinimaxAgent:
-    def __init__(self, depth, is_alpha_beta=True, square_weighting=False, ratio=False):
+    def __init__(self, depth, square_weighting=False, ratio=False):
         '''
         :param depth: depth of initial exploration
         :param is_alpha_beta:
@@ -14,9 +14,10 @@ class MinimaxAgent:
         :param ratio:
         '''
         self.depth = depth
-        self.is_alpha_beta = is_alpha_beta
         self.square_weighting = square_weighting
         self.ratio = ratio
+
+        self.move_dic = {}
 
 
     def get_move_values(self, move_arr, board, turn, depth):
@@ -24,10 +25,8 @@ class MinimaxAgent:
         for i in range(len(move_arr)):
             new_board = copy.deepcopy(board)
             new_board.push(move_arr[i])
-            if self.is_alpha_beta:
-                new_val = self.alpha_beta(new_board, turn, depth, -10000, 10000)
-            else:
-                new_val = self.minimax(new_board, turn, depth)
+            new_val = self.alpha_beta(new_board, turn, depth, -10000, 10000)
+
             move_values.append((move_arr[i], new_val))
         move_values = sorted(move_values, key=lambda tup: tup[1], reverse=True)
         return move_values
@@ -36,8 +35,12 @@ class MinimaxAgent:
         turn = board.fen().split(' ')[1]
         move_arr = MinimaxAgent.get_legal_moves(board)
         random.shuffle(move_arr)
-        best_ind = 0
-        move_values = self.get_move_values(move_arr, board, turn, self.depth)
+        for i in range(self.depth + 1):
+            move_values = self.get_move_values(move_arr, board, turn, self.depth)
+            move_arr = [tup[0] for tup in move_values]
+
+
+
 
         return str(move_values[0][0])
 
@@ -49,7 +52,11 @@ class MinimaxAgent:
         legal_arr = [move for move in board.legal_moves]
         return legal_arr
 
+
+
     def alpha_beta(self, board, true_player, depth, alpha, beta):
+        fen = board.fen()
+
         if depth == 0 or board.is_game_over():
             return evaluation_2.evaluate(board, true_player)
 
@@ -59,12 +66,15 @@ class MinimaxAgent:
         else:
             is_maximise = False
 
-        move_arr = MinimaxAgent.get_legal_moves(board)
-        move_arr = priorities.prioritise(move_arr)
+        if fen in self.move_dic:
+            move_arr = self.move_dic[fen]
+        else:
+            move_arr = MinimaxAgent.get_legal_moves(board)
+        move_val_arr = []
 
         if is_maximise:
             eval = -10000
-            for move in MinimaxAgent.get_legal_moves(board):
+            for move in move_arr:
                 new_board = copy.deepcopy(board)
                 new_board.push(move)
 
@@ -74,9 +84,12 @@ class MinimaxAgent:
                 print(new_board.fen())
                 print('eval of ^:', new_val, 'depth:', depth-1)'''
                 eval = max(eval, new_val)
+                move_val_arr.append((move, new_val))
                 if alpha >= beta:
                     break
-
+                move_val_arr.append((move, new_val))
+            move_val_arr = sorted(move_val_arr, key=lambda tup: tup[1], reverse=True)
+            self.move_dic[fen] = [tup[0] for tup in move_val_arr]
 
             return eval
 
@@ -96,6 +109,10 @@ class MinimaxAgent:
 
                 if alpha >= beta:
                     break
+                move_val_arr.append((move, new_val))
+
+            move_val_arr = sorted(move_val_arr, key=lambda tup: tup[1])
+            self.move_dic[fen] = [tup[0] for tup in move_val_arr]
             return eval
 
 '''a = MinimaxAgent(2)
